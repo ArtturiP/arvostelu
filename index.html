@@ -40,18 +40,61 @@
 </head>
 <body>
   <h1>Juoma-arvostelut</h1>
+  <div class="nav" id="nav"></div>
   <div id="juomalista">Ladataan juomia...</div>
 
   <script>
     const sheetID = '10EOBEX7AnqqT53H-t0ZWkOSeC-DcX5hD8AKgw5cSPdY'; // <-- Oma Google Sheetsin ID
     const sheetURL = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?tqx=out:json`;
 
+    let kaikkiJuomat = [];
+
     fetch(sheetURL)
       .then(res => res.text())
       .then(text => {
         const json = JSON.parse(text.substr(47).slice(0, -2));
         const rows = json.table.rows;
+        
+        kaikkiJuomat = rows.map(row => {
+          const [brändi, nimi, tyyppi, arvosana, kuvaus] = row.c.map(cell => cell ? cell.v : "");
+          return { brändi, nimi, tyyppi, arvosana, kuvaus };
+        });
 
+        luoNavigaatio();
+        naytaJuomat(); // Näytä aluksi kaikki
+      })
+      .catch(err => {
+        document.getElementById('juomalista').innerHTML = 'Virhe ladattaessa juomia.';
+        console.error('Virhe:', err);
+      });
+
+    function luoNavigaatio() {
+      const nav = document.getElementById('nav');
+      const tyypit = [...new Set(kaikkiJuomat.map(j => j.tyyppi))].filter(Boolean);
+      const kaikkiBtn = document.createElement('button');
+      kaikkiBtn.textContent = 'Kaikki';
+      kaikkiBtn.classList.add('active');
+      kaikkiBtn.onclick = () => naytaJuomat();
+      nav.appendChild(kaikkiBtn);
+
+      tyypit.forEach(tyyppi => {
+        const btn = document.createElement('button');
+        btn.textContent = tyyppi;
+        btn.onclick = () => naytaJuomat(tyyppi);
+        nav.appendChild(btn);
+      });
+    }
+
+    function naytaJuomat(suodatusTyyppi = null) {
+      document.querySelectorAll('.nav button').forEach(btn => btn.classList.remove('active'));
+      const aktiivinenBtn = Array.from(document.querySelectorAll('.nav button'))
+        .find(btn => btn.textContent === (suodatusTyyppi || 'Kaikki'));
+      if (aktiivinenBtn) aktiivinenBtn.classList.add('active');
+
+      const juomat = suodatusTyyppi
+        ? kaikkiJuomat.filter(j => j.tyyppi === suodatusTyyppi)
+        : kaikkiJuomat;
+      
         let html = '<table>';
         html += `
           <thead>
@@ -66,26 +109,13 @@
           <tbody>
         `;
 
-        rows.forEach(row => {
-          const [brändi, nimi, tyyppi, arvosana, kuvaus] = row.c.map(cell => cell ? cell.v : "");
-          html += `
-            <tr>
-              <td>${brändi}</td>
-              <td>${nimi}</td>
-              <td>${tyyppi}</td>
-              <td>${arvosana}</td>
-              <td>${kuvaus}</td>
-            </tr>
-          `;
-        });
-
-        html += '</tbody></table>';
-        document.getElementById('juomalista').innerHTML = html;
-      })
-      .catch(err => {
-        document.getElementById('juomalista').innerHTML = 'Virhe ladattaessa juomia.';
-        console.error('Virhe:', err);
+      juomat.forEach(j => {
+        html += `<tr><td>${j.brändi}</td><td>$<tr><td>${j.nimi}</td><td>${j.tyyppi}</td><td>${j.arvosana}</td><td>${j.kuvaus}</td></tr>`;
       });
+
+      html += '</tbody></table>';
+      document.getElementById('juomalista').innerHTML = html;
+    }
   </script>
 </body>
 </html>
