@@ -67,7 +67,7 @@
         `;
 
         rows.forEach(row => {
-          const [nimi, tyyppi, arvosana, kuvaus] = row.c.map(cell => cell ? cell.v : "");
+          const [brändi, nimi, tyyppi, arvosana, kuvaus] = row.c.map(cell => cell ? cell.v : "");
           html += `
             <tr>
               <td>${brändi}</td>
