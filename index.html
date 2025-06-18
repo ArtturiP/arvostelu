@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Juoma-arvostelut</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 1rem;
+      background: #f5f5f5;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+      color: #222;
+    }
+    .juoma {
+      background: #fff;
+      margin-bottom: 1rem;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .juoma h2 {
+      margin: 0 0 0.5rem 0;
+    }
+    .arvosana {
+      font-weight: bold;
+      color: #008000;
+    }
+  </style>
+</head>
+<body>
+  <h1>Juoma-arvostelut</h1>
+  <div id="juomalista">Ladataan juomia...</div>
+
+  <script>
+    const sheetID = '10EOBEX7AnqqT53H-t0ZWkOSeC-DcX5hD8AKgw5cSPdY';
+    const sheetURL = `https://docs.google.com/spreadsheets/d/10EOBEX7AnqqT53H-t0ZWkOSeC-DcX5hD8AKgw5cSPdY/gviz/tq?tqx=out:json`;
+
+    fetch(sheetURL)
+      .then(res => res.text())
+      .then(text => {
+        const json = JSON.parse(text.substr(47).slice(0, -2));
+        const rows = json.table.rows;
+
+        const container = document.getElementById('juomalista');
+        container.innerHTML = ''; // Tyhjennetään "Ladataan..." -teksti
+
+        rows.forEach(row => {
+          const [nimi, tyyppi, arvosana, kuvaus] = row.c.map(cell => cell ? cell.v : "");
+          const el = document.createElement('div');
+          el.className = 'juoma';
+          el.innerHTML = `
+            <h2>${nimi} (${tyyppi})</h2>
+            <p class="arvosana">Arvosana: ${arvosana}/5</p>
+            <p>${kuvaus}</p>
+          `;
+          container.appendChild(el);
+        });
+      })
+      .catch(err => {
+        document.getElementById('juomalista').innerHTML = 'Virhe ladattaessa juomia.';
+        console.error('Virhe:', err);
+      });
+  </script>
+</body>
+</html>
