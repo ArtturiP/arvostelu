@@ -43,7 +43,7 @@
   <div id="juomalista">Ladataan juomia...</div>
 
   <script>
-    const sheetID = '10EOBEX7AnqqT53H-t0ZWkOSeC-DcX5hD8AKgw5cSPdY';
+    const sheetID = '10EOBEX7AnqqT53H-t0ZWkOSeC-DcX5hD8AKgw5cSPdY'; // <-- Oma Google Sheetsin ID
     const sheetURL = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?tqx=out:json`;
 
     fetch(sheetURL)
@@ -56,7 +56,6 @@
         html += `
           <thead>
             <tr>
-              <th>Brändi</th>
               <th>Nimi</th>
               <th>Tyyppi</th>
               <th>Arvosana</th>
@@ -65,12 +64,11 @@
           </thead>
           <tbody>
         `;
-        
+
         rows.forEach(row => {
-          const [brändi, nimi, tyyppi, arvosana, kuvaus] = row.c.map(cell => cell ? cell.v : "");
+          const [nimi, tyyppi, arvosana, kuvaus] = row.c.map(cell => cell ? cell.v : "");
           html += `
             <tr>
-              <td>${brändi}</td>
               <td>${nimi}</td>
               <td>${tyyppi}</td>
               <td>${arvosana}</td>
@@ -78,5 +76,14 @@
             </tr>
           `;
         });
+
+        html += '</tbody></table>';
+        document.getElementById('juomalista').innerHTML = html;
+      })
+      .catch(err => {
+        document.getElementById('juomalista').innerHTML = 'Virhe ladattaessa juomia.';
+        console.error('Virhe:', err);
+      });
+  </script>
 </body>
 </html>
