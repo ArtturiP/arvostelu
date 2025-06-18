@@ -39,7 +39,7 @@
 
   <script>
     const sheetID = '10EOBEX7AnqqT53H-t0ZWkOSeC-DcX5hD8AKgw5cSPdY';
-    const sheetURL = `https://docs.google.com/spreadsheets/d/10EOBEX7AnqqT53H-t0ZWkOSeC-DcX5hD8AKgw5cSPdY/gviz/tq?tqx=out:json`;
+    const sheetURL = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?tqx=out:json`;
 
     fetch(sheetURL)
       .then(res => res.text())
