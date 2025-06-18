@@ -4,4 +4,4 @@ Tämä on yksinkertainen juoma-arvostelusivusto, joka lataa tietonsa Google Shee
 
 
 ## osoite
-https://KÄYTTÄJÄNIMI.github.io/arvostelu
+https://ArtturiP.github.io/arvostelu
